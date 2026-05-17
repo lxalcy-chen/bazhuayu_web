@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f7fbff;
+        font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+        color: #07111f;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 82% 16%, rgba(57, 214, 255, 0.2), transparent 32%),
+          radial-gradient(circle at 18% 82%, rgba(27, 112, 255, 0.13), transparent 34%),
+          linear-gradient(135deg, #ffffff 0%, #edf7ff 58%, #dff2ff 100%);
+      }
+
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(27, 112, 255, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(27, 112, 255, 0.08) 1px, transparent 1px);
+        background-size: 58px 58px;
+        mask-image: radial-gradient(circle at 50% 42%, black, transparent 75%);
+      }
+
+      .scan {
+        position: absolute;
+        left: -18%;
+        width: 136%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(27, 112, 255, 0.55), rgba(57, 214, 255, 0.7), transparent);
+        opacity: 0.45;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        padding: 96px 130px;
+        opacity: 1;
+      }
+
+      .transition-wipe {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        background:
+          linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 16%, rgba(255, 255, 255, 0.92) 43%, rgba(57, 214, 255, 0.54) 64%, transparent 100%);
+        pointer-events: none;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(27, 112, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 12px 18px;
+        color: #1b70ff;
+        font-size: 24px;
+        font-weight: 700;
+        box-shadow: 0 12px 34px rgba(27, 112, 255, 0.1);
+        backdrop-filter: blur(18px);
+      }
+
+      .hero-title {
+        max-width: 980px;
+        margin-top: 40px;
+        font-size: 116px;
+        line-height: 1.02;
+        letter-spacing: 0;
+        font-weight: 800;
+      }
+
+      .blue-chip {
+        display: inline-flex;
+        margin-top: 28px;
+        border-radius: 16px;
+        background: #1b70ff;
+        padding: 18px 28px;
+        color: white;
+        font-size: 38px;
+        font-weight: 800;
+        box-shadow: 0 24px 64px rgba(27, 112, 255, 0.25);
+      }
+
+      .big-blue {
+        max-width: 980px;
+        margin-top: 38px;
+        color: #0b58dd;
+        font-size: 54px;
+        line-height: 1.24;
+        font-weight: 800;
+      }
+
+      .stat-list {
+        display: grid;
+        gap: 18px;
+        margin-top: 48px;
+      }
+
+      .stat-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: #5b6c82;
+        font-size: 30px;
+        font-weight: 600;
+      }
+
+      .check {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #eaf3ff;
+        color: #1b70ff;
+        font-size: 25px;
+        line-height: 1;
+        font-weight: 900;
+      }
+
+      .stat-row strong {
+        color: #07111f;
+        font-size: 38px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .dashboard-ghost {
+        position: absolute;
+        right: 120px;
+        top: 170px;
+        width: 740px;
+        height: 520px;
+        border: 1px solid rgba(27, 112, 255, 0.14);
+        border-radius: 36px;
+        background: rgba(255, 255, 255, 0.48);
+        box-shadow: 0 34px 110px rgba(27, 112, 255, 0.15);
+        backdrop-filter: blur(20px);
+      }
+
+      .dashboard-card {
+        position: absolute;
+        right: 165px;
+        top: 230px;
+        width: 660px;
+        border: 1px solid rgba(27, 112, 255, 0.14);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.75);
+        padding: 26px;
+        box-shadow: 0 24px 80px rgba(27, 112, 255, 0.14);
+        backdrop-filter: blur(24px);
+      }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+
+      .metric-card {
+        border-radius: 20px;
+        background: rgba(235, 246, 255, 0.95);
+        padding: 18px;
+      }
+
+      .metric-card p {
+        color: #5b6c82;
+        font-size: 18px;
+      }
+
+      .metric-card strong {
+        display: block;
+        margin-top: 10px;
+        font-size: 36px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .bar-box {
+        display: flex;
+        align-items: flex-end;
+        gap: 14px;
+        height: 230px;
+        margin-top: 22px;
+        border: 1px solid rgba(27, 112, 255, 0.12);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.74);
+        padding: 22px;
+      }
+
+      .bar {
+        flex: 1;
+        border-radius: 14px 14px 0 0;
+        background: linear-gradient(180deg, #39d6ff, #1b70ff);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 70px;
+        align-items: center;
+        height: 100%;
+      }
+
+      .visual-panel {
+        border: 1px solid rgba(27, 112, 255, 0.16);
+        border-radius: 38px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 20px;
+        box-shadow: 0 34px 110px rgba(27, 112, 255, 0.14);
+        backdrop-filter: blur(24px);
+      }
+
+      .visual-panel img {
+        display: block;
+        width: 100%;
+        border-radius: 28px;
+      }
+
+      .large-title {
+        font-size: 78px;
+        line-height: 1.08;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      .body-copy {
+        margin-top: 28px;
+        max-width: 690px;
+        color: #5b6c82;
+        font-size: 31px;
+        line-height: 1.55;
+        font-weight: 500;
+      }
+
+      .floating-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 42px;
+      }
+
+      .float-card {
+        border: 1px solid rgba(27, 112, 255, 0.14);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.78);
+        padding: 22px;
+        box-shadow: 0 18px 55px rgba(27, 112, 255, 0.1);
+      }
+
+      .float-card strong {
+        display: block;
+        font-size: 32px;
+      }
+
+      .float-card span {
+        display: block;
+        margin-top: 10px;
+        color: #5b6c82;
+        font-size: 20px;
+      }
+
+      .capability-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 26px;
+        margin-top: 58px;
+      }
+
+      .cap-card {
+        min-height: 260px;
+        border: 1px solid rgba(27, 112, 255, 0.14);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 32px;
+        box-shadow: 0 24px 80px rgba(27, 112, 255, 0.11);
+        backdrop-filter: blur(24px);
+      }
+
+      .cap-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .icon-box {
+        display: grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        background: #1b70ff;
+        color: white;
+        font-size: 28px;
+        box-shadow: 0 16px 38px rgba(27, 112, 255, 0.25);
+      }
+
+      .pill {
+        border: 1px solid rgba(27, 112, 255, 0.15);
+        border-radius: 999px;
+        background: #eaf3ff;
+        padding: 11px 18px;
+        color: #1b70ff;
+        font-size: 20px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .cap-card h3 {
+        margin-top: 34px;
+        font-size: 36px;
+      }
+
+      .cap-card p {
+        margin-top: 18px;
+        color: #5b6c82;
+        font-size: 24px;
+        line-height: 1.5;
+      }
+
+      .orbit-layout {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 54px;
+        align-items: center;
+        height: 100%;
+      }
+
+      .orbit {
+        position: relative;
+        width: 790px;
+        height: 790px;
+        margin: 0 auto;
+      }
+
+      .center-ai {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 190px;
+        height: 190px;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(27, 112, 255, 0.14);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 26px 90px rgba(27, 112, 255, 0.2);
+      }
+
+      .center-ai > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .center-ai strong {
+        display: block;
+        font-size: 32px;
+        line-height: 1.08;
+        white-space: nowrap;
+      }
+
+      .center-ai span {
+        display: block;
+        color: #5b6c82;
+        font-size: 18px;
+        line-height: 1.15;
+        white-space: nowrap;
+      }
+
+      .platform-node {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 132px;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(27, 112, 255, 0.14);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 12px 15px;
+        box-shadow: 0 18px 50px rgba(27, 112, 255, 0.13);
+        color: #07111f;
+        font-size: 22px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .platform-node::before {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        z-index: -1;
+        border-radius: 26px;
+        background: rgba(57, 214, 255, 0.14);
+        filter: blur(10px);
+        opacity: 0.85;
+      }
+
+      .platform-node img {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+
+      .output-stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .output-item {
+        border: 1px solid rgba(57, 214, 255, 0.25);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.82);
+        padding: 24px 28px;
+        color: #07111f;
+        font-size: 28px;
+        font-weight: 800;
+        box-shadow: 0 16px 45px rgba(27, 112, 255, 0.1);
+      }
+
+      .skill-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        margin-top: 54px;
+      }
+
+      .skill-card {
+        border: 1px solid rgba(27, 112, 255, 0.14);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.82);
+        padding: 26px;
+        box-shadow: 0 20px 70px rgba(27, 112, 255, 0.1);
+        backdrop-filter: blur(20px);
+      }
+
+      .skill-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .skill-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #5b6c82;
+        font-size: 21px;
+        font-weight: 700;
+      }
+
+      .skill-logo img {
+        width: 38px;
+        height: 38px;
+        object-fit: contain;
+        border-radius: 10px;
+      }
+
+      .skill-card h3 {
+        margin-top: 24px;
+        font-size: 31px;
+      }
+
+      .skill-card p {
+        margin-top: 14px;
+        color: #5b6c82;
+        font-size: 22px;
+        line-height: 1.48;
+      }
+
+      .final {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .final h2 {
+        max-width: 1180px;
+        font-size: 82px;
+        line-height: 1.12;
+      }
+
+      .final p {
+        margin-top: 32px;
+        max-width: 920px;
+        color: #5b6c82;
+        font-size: 32px;
+        line-height: 1.5;
+      }
+
+      .cta {
+        display: inline-flex;
+        margin-top: 46px;
+        border-radius: 999px;
+        background: #1b70ff;
+        padding: 22px 34px;
+        color: white;
+        font-size: 28px;
+        font-weight: 800;
+        box-shadow: 0 24px 70px rgba(27, 112, 255, 0.25);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="33"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="grid"></div>
+      <div class="scan scan-a" style="top: 210px"></div>
+      <div class="scan scan-b" style="bottom: 190px"></div>
+
+      <section id="scene-1" class="scene clip" data-start="0" data-duration="5.5" data-track-index="1">
+        <div class="eyebrow">八爪鱼 AI Agent</div>
+        <h1 class="hero-title">八爪鱼・AI Agent</h1>
+        <div class="blue-chip">以业财数据为核心的电商 Agent</div>
+        <p class="big-blue">电商的 AI 合伙人：让 AI 接管你的企业</p>
+        <div class="stat-list">
+          <div class="stat-row"><span class="check">✓</span><span>经营决策效率提升</span><strong>80%+</strong></div>
+          <div class="stat-row"><span class="check">✓</span><span>实现人工成本降低</span><strong>30%+</strong></div>
+          <div class="stat-row"><span class="check">✓</span><span>数据资产效益提升</span><strong>99%</strong></div>
+        </div>
+        <div class="dashboard-ghost"></div>
+        <div class="dashboard-card">
+          <div class="mini-grid">
+            <div class="metric-card"><p>今日净利润</p><strong>¥86.4万</strong></div>
+            <div class="metric-card"><p>风险提醒</p><strong>7条</strong></div>
+            <div class="metric-card"><p>投流 ROI</p><strong>3.7x</strong></div>
+          </div>
+          <div class="bar-box">
+            <div class="bar" style="height: 42%"></div>
+            <div class="bar" style="height: 68%"></div>
+            <div class="bar" style="height: 52%"></div>
+            <div class="bar" style="height: 86%"></div>
+            <div class="bar" style="height: 64%"></div>
+            <div class="bar" style="height: 100%"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-2" class="scene clip" data-start="5.5" data-duration="5.5" data-track-index="1">
+        <div class="split">
+          <div class="visual-panel">
+            <img src="assets/ai-digital-manager-illustration.png" alt="AI 数字店长" />
+          </div>
+          <div>
+            <div class="eyebrow">AI 数字店长</div>
+            <h2 class="large-title">每天自动巡店，把经营重点推到老板面前</h2>
+            <p class="body-copy">不用反复登录后台、催团队交表。利润、风险、投流、库存和售后数据，每天自动汇总成老板能看懂的经营动作。</p>
+            <div class="floating-cards">
+              <div class="float-card"><strong>利润</strong><span>看清赚亏</span></div>
+              <div class="float-card"><strong>风险</strong><span>提前提醒</span></div>
+              <div class="float-card"><strong>报表</strong><span>自动生成</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-3" class="scene clip" data-start="11" data-duration="6" data-track-index="1">
+        <div class="eyebrow">四大能力</div>
+        <h2 class="large-title">覆盖电商经营核心工作</h2>
+        <div class="capability-grid">
+          <div class="cap-card">
+            <div class="cap-top"><div class="icon-box">¥</div><div class="pill">T+1 利润自动更新</div></div>
+            <h3>算清楚赚没赚钱</h3>
+            <p>按平台、店铺、SKU 自动算真实利润，知道钱赚在哪里、亏在哪里。</p>
+          </div>
+          <div class="cap-card">
+            <div class="cap-top"><div class="icon-box">!</div><div class="pill">30+ 风险指标</div></div>
+            <h3>排查并预警财务风险</h3>
+            <p>税负、回款、退款、库存、毛利率异常提前提醒，减少被动救火。</p>
+          </div>
+          <div class="cap-card">
+            <div class="cap-top"><div class="icon-box">AI</div><div class="pill">80% 重复工作自动化</div></div>
+            <h3>AI 数字员工替你干活</h3>
+            <p>自动取数、对账、做表、生成日报周报，把团队从重复劳动里解放出来。</p>
+          </div>
+          <div class="cap-card">
+            <div class="cap-top"><div class="icon-box">脑</div><div class="pill">100+ 分析模型</div></div>
+            <h3>智慧大脑综合分析</h3>
+            <p>综合销售、利润、投流、库存和售后数据，给出可执行的经营建议。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-4" class="scene clip" data-start="17" data-duration="7" data-track-index="1">
+        <div class="orbit-layout">
+          <div class="orbit">
+            <div class="center-ai"><div><strong>八爪鱼 AI</strong><span>全平台连接</span></div></div>
+            <div class="platform-node node-1" style="left: 50%; top: 10%"><img src="assets/taobao.png" alt="淘宝" />淘宝</div>
+            <div class="platform-node node-2" style="left: 78%; top: 18%"><img src="assets/dewu.png" alt="得物" />得物</div>
+            <div class="platform-node node-3" style="left: 88%; top: 50%"><img src="assets/jd.png" alt="京东" />京东</div>
+            <div class="platform-node node-4" style="left: 78%; top: 82%"><img src="assets/douyin.png" alt="抖音" />抖音</div>
+            <div class="platform-node node-5" style="left: 50%; top: 90%"><img src="assets/pinduoduo.png" alt="拼多多" />拼多多</div>
+            <div class="platform-node node-6" style="left: 22%; top: 82%"><img src="assets/xiaohongshu.svg" alt="小红书" />小红书</div>
+            <div class="platform-node node-7" style="left: 12%; top: 50%"><img src="assets/weixin.png" alt="视频号" />视频号</div>
+            <div class="platform-node node-8" style="left: 22%; top: 18%"><img src="assets/kuaishou.png" alt="快手" />快手</div>
+          </div>
+          <div>
+            <div class="eyebrow">主流平台，一起接入</div>
+            <h2 class="large-title">一个 AI，接住多平台生意</h2>
+            <p class="body-copy">店铺、投流、财务、库存和售后数据自动汇总，老板不用在多个后台来回切换。</p>
+            <div class="output-stack" style="margin-top: 38px">
+              <div class="output-item">利润看板</div>
+              <div class="output-item">风险预警</div>
+              <div class="output-item">经营日报</div>
+              <div class="output-item">AI 建议</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-5" class="scene clip" data-start="24" data-duration="6" data-track-index="1">
+        <div class="eyebrow">海量技能，开箱即用</div>
+        <h2 class="large-title">常见电商工作，直接交给 AI 数字员工</h2>
+        <div class="skill-grid">
+          <div class="skill-card"><div class="skill-head"><div class="skill-logo"><img src="assets/taobao.png" alt="淘宝" />淘宝</div><div class="pill">Skill</div></div><h3>商品数据采集</h3><p>自动采集销量、价格、评价、库存等商品数据。</p></div>
+          <div class="skill-card"><div class="skill-head"><div class="skill-logo"><img src="assets/xiaohongshu.svg" alt="小红书" />小红书</div><div class="pill">Skill</div></div><h3>详情页主图优化</h3><p>分析素材表现，给出主图、卖点和种草内容建议。</p></div>
+          <div class="skill-card"><div class="skill-head"><div class="skill-logo"><img src="assets/douyin.png" alt="抖音" />抖音</div><div class="pill">Skill</div></div><h3>投流 ROI 分析</h3><p>拆解直播、短视频和投放带来的利润回报。</p></div>
+          <div class="skill-card"><div class="skill-head"><div class="skill-logo"><img src="assets/jd.png" alt="京东" />京东</div><div class="pill">Skill</div></div><h3>竞品价格监控</h3><p>跟踪竞品价格、促销和排名变化，辅助调价。</p></div>
+          <div class="skill-card"><div class="skill-head"><div class="skill-logo"><img src="assets/pinduoduo.png" alt="拼多多" />拼多多</div><div class="pill">Skill</div></div><h3>低价爆品预警</h3><p>监控低价竞争、毛利压缩和异常退款风险。</p></div>
+          <div class="skill-card"><div class="skill-head"><div class="skill-logo"><img src="assets/tmall.png" alt="天猫" />天猫</div><div class="pill">Skill</div></div><h3>店铺经营日报</h3><p>汇总销售、利润、退款和广告消耗，自动生成日报。</p></div>
+        </div>
+      </section>
+
+      <section id="scene-6" class="scene clip final" data-start="30" data-duration="3" data-track-index="1">
+        <div class="eyebrow">八爪鱼・AI Agent</div>
+        <h2 class="large-title">让每一笔生意，都看得见风险，算得清利润</h2>
+        <p>每天主动告诉你：哪里赚钱、哪里亏钱、哪里要马上处理，以及下一步该怎么调。</p>
+        <div class="cta">预约产品演示</div>
+      </section>
+
+      <div class="transition-wipe"></div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const scenes = ["#scene-1", "#scene-2", "#scene-3", "#scene-4", "#scene-5", "#scene-6"];
+      const starts = [0, 5.5, 11, 17, 24, 30];
+
+      gsap.set(".transition-wipe", { xPercent: -110 });
+
+      tl.to(".scan-a", { x: 260, duration: 6, repeat: 5, ease: "none" }, 0);
+      tl.to(".scan-b", { x: -220, duration: 7, repeat: 4, ease: "none" }, 0);
+
+      function wipeAt(time, nextScene) {
+        tl.to(".transition-wipe", { xPercent: 220, duration: 0.78, ease: "power2.inOut" }, time - 0.2);
+        tl.set(".transition-wipe", { xPercent: -110 }, time + 0.68);
+      }
+
+      function sceneIntro(scene, time) {
+        tl.from(scene + " .eyebrow", { y: 34, opacity: 0, duration: 0.55, ease: "power3.out" }, time + 0.22);
+        tl.from(scene + " .large-title, " + scene + " .hero-title", { y: 56, opacity: 0, duration: 0.72, ease: "expo.out" }, time + 0.38);
+      }
+
+      sceneIntro("#scene-1", 0);
+      tl.from("#scene-1 .blue-chip", { scaleX: 0.82, opacity: 0, duration: 0.58, ease: "back.out(1.4)" }, 0.86);
+      tl.from("#scene-1 .big-blue", { y: 36, opacity: 0, duration: 0.58, ease: "power2.out" }, 1.15);
+      tl.from("#scene-1 .stat-row", { x: -38, opacity: 0, duration: 0.48, stagger: 0.14, ease: "power3.out" }, 1.55);
+      tl.from("#scene-1 .dashboard-ghost", { x: 80, opacity: 0, duration: 0.72, ease: "power2.out" }, 0.62);
+      tl.from("#scene-1 .dashboard-card", { x: 110, y: 28, opacity: 0, duration: 0.76, ease: "expo.out" }, 0.92);
+      tl.from("#scene-1 .bar", { scaleY: 0.1, transformOrigin: "bottom", duration: 0.65, stagger: 0.08, ease: "back.out(1.7)" }, 1.55);
+
+      wipeAt(5.5, "#scene-2");
+      sceneIntro("#scene-2", 5.5);
+      tl.from("#scene-2 .visual-panel", { scale: 0.92, x: -50, opacity: 0, duration: 0.8, ease: "power4.out" }, 5.85);
+      tl.to("#scene-2 .visual-panel", { y: -10, duration: 2.2, repeat: 2, yoyo: true, ease: "sine.inOut" }, 6.8);
+      tl.from("#scene-2 .body-copy", { y: 34, opacity: 0, duration: 0.56, ease: "power2.out" }, 6.42);
+      tl.from("#scene-2 .float-card", { y: 42, opacity: 0, duration: 0.52, stagger: 0.12, ease: "back.out(1.55)" }, 6.82);
+
+      wipeAt(11, "#scene-3");
+      sceneIntro("#scene-3", 11);
+      tl.from("#scene-3 .cap-card", { y: 58, opacity: 0, scale: 0.96, duration: 0.58, stagger: 0.12, ease: "power3.out" }, 11.75);
+      tl.from("#scene-3 .pill", { scale: 0.82, opacity: 0, duration: 0.44, stagger: 0.1, ease: "back.out(1.8)" }, 12.2);
+
+      wipeAt(17, "#scene-4");
+      sceneIntro("#scene-4", 17);
+      tl.from("#scene-4 .center-ai", { scale: 0.72, opacity: 0, duration: 0.72, ease: "back.out(1.8)" }, 17.55);
+      tl.from("#scene-4 .platform-node", { scale: 0.74, opacity: 0, duration: 0.48, stagger: 0.08, ease: "back.out(1.8)" }, 17.95);
+      tl.from("#scene-4 .output-item", { x: 48, opacity: 0, duration: 0.52, stagger: 0.12, ease: "power3.out" }, 18.8);
+      tl.to("#scene-4 .platform-node", { y: -12, scale: 1.04, duration: 0.82, repeat: 5, yoyo: true, ease: "sine.inOut", stagger: 0.06 }, 18.8);
+
+      wipeAt(24, "#scene-5");
+      sceneIntro("#scene-5", 24);
+      tl.from("#scene-5 .skill-card", { y: 48, opacity: 0, scale: 0.96, duration: 0.5, stagger: 0.09, ease: "power3.out" }, 24.82);
+      tl.from("#scene-5 .skill-logo img", { rotation: -8, scale: 0.75, opacity: 0, duration: 0.36, stagger: 0.06, ease: "back.out(1.9)" }, 25.1);
+
+      wipeAt(30, "#scene-6");
+      sceneIntro("#scene-6", 30);
+      tl.from("#scene-6 p", { y: 34, opacity: 0, duration: 0.55, ease: "power2.out" }, 30.82);
+      tl.from("#scene-6 .cta", { y: 30, scale: 0.92, opacity: 0, duration: 0.58, ease: "back.out(1.7)" }, 31.15);
+      tl.to("#scene-6 .cta", { scale: 1.04, duration: 0.55, repeat: 2, yoyo: true, ease: "sine.inOut" }, 31.75);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

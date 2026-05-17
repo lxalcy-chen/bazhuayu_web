@@ -1,0 +1,35 @@
+services:
+  bazuayu-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bazuayu-ai-agent-landing:latest
+    container_name: bazuayu-ai-agent-web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3101}:3101"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3101
+      HOSTNAME: 0.0.0.0
+      NEXT_TELEMETRY_DISABLED: "1"
+    networks:
+      - bazuayu-net
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: bazuayu-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - bazuayu-web
+    networks:
+      - bazuayu-net
+    profiles:
+      - tunnel
+
+networks:
+  bazuayu-net:
+    driver: bridge
