@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "setup:local": "node scripts/setup-local.mjs",
+    "predev": "npm run setup:local",
+    "dev": "next dev -H 0.0.0.0 -p 3101",
+    "prebuild": "npm run setup:local",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3101",
-    "start:local": "next start",
-    "lint": "next lint"
+    "start:local": "next start -H 0.0.0.0 -p 3101",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.8",

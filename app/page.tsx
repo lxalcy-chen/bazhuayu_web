@@ -31,6 +31,27 @@ const fadeUp = {
 
 const transition: Transition = { duration: 0.65, ease: [0.22, 1, 0.36, 1] };
 
+const defaultAdminUrl = "http://localhost:8080";
+
+function getBrowserAdminUrl() {
+  if (typeof window === "undefined") return defaultAdminUrl;
+
+  const hostname = window.location.hostname;
+  const adminHost = hostname === "127.0.0.1" || hostname === "localhost" ? "localhost" : hostname;
+
+  return `http://${adminHost}:8080`;
+}
+
+function useAdminUrl() {
+  const [adminUrl, setAdminUrl] = useState(defaultAdminUrl);
+
+  useEffect(() => {
+    setAdminUrl(getBrowserAdminUrl());
+  }, []);
+
+  return adminUrl;
+}
+
 function Reveal({
   children,
   className = "",
@@ -265,6 +286,8 @@ function SectionHeader({
 }
 
 function Hero() {
+  const adminUrl = useAdminUrl();
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#ffffff_0%,#eef6ff_48%,#dff2ff_100%)] px-5 py-6">
       <BackgroundGrid />
@@ -278,8 +301,8 @@ function Hero() {
             <p className="text-xs text-slate-500">多功能电商经营 Agent</p>
           </div>
         </div>
-        <a href="#cta" className="hidden rounded-full border border-blue-200 bg-white/70 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm backdrop-blur md:inline-flex">
-          预约演示
+        <a href={adminUrl} className="hidden rounded-full border border-blue-200 bg-white/70 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm backdrop-blur md:inline-flex">
+          进入管理后台
         </a>
       </nav>
 
@@ -338,8 +361,8 @@ function Hero() {
             <a href="#digital-manager" className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-[0_18px_42px_rgba(37,99,235,0.28)]">
               查看四大能力 <ArrowRight size={16} />
             </a>
-            <a href="#cta" className="inline-flex items-center justify-center gap-2 rounded-full border border-blue-200 bg-white/75 px-6 py-3.5 text-sm font-semibold text-blue-700 shadow-sm backdrop-blur">
-              预约产品演示
+            <a href={adminUrl} className="inline-flex items-center justify-center gap-2 rounded-full border border-blue-200 bg-white/75 px-6 py-3.5 text-sm font-semibold text-blue-700 shadow-sm backdrop-blur">
+              进入管理后台
             </a>
           </motion.div>
         </div>
@@ -835,6 +858,8 @@ function FitSection() {
 }
 
 function CTASection() {
+  const adminUrl = useAdminUrl();
+
   return (
     <section id="cta" className="relative overflow-hidden bg-[linear-gradient(180deg,#f4f9ff_0%,#ffffff_100%)] px-5 py-24 sm:py-32">
       <BackgroundGrid />
@@ -848,8 +873,8 @@ function CTASection() {
             八爪鱼 AI 每天主动告诉你：哪里赚钱、哪里亏钱、哪里要马上处理，以及下一步该怎么调。
           </p>
           <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-            <a href="mailto:demo@octopus-ai.local" className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-7 py-4 text-sm font-semibold text-white shadow-[0_18px_42px_rgba(37,99,235,0.28)]">
-              预约产品演示 <ArrowRight size={16} />
+            <a href={adminUrl} className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-7 py-4 text-sm font-semibold text-white shadow-[0_18px_42px_rgba(37,99,235,0.28)]">
+              进入管理后台 <ArrowRight size={16} />
             </a>
             <a href="#advantages" className="inline-flex items-center justify-center gap-2 rounded-full border border-blue-200 bg-white/75 px-7 py-4 text-sm font-semibold text-blue-700 shadow-sm backdrop-blur">
               回看四大优势 <TrendingUp size={16} />

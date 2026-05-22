@@ -14,7 +14,13 @@ services:
       NODE_ENV: production
       PORT: 3101
       HOSTNAME: 0.0.0.0
+      DOCKER: "true"
+      NEXT_OUTPUT: standalone
       NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: "file:/data/dev.db"
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - ./data:/data
     networks:
       - bazuayu-net
 
