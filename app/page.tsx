@@ -31,26 +31,7 @@ const fadeUp = {
 
 const transition: Transition = { duration: 0.65, ease: [0.22, 1, 0.36, 1] };
 
-const defaultAdminUrl = "http://localhost:8080";
-
-function getBrowserAdminUrl() {
-  if (typeof window === "undefined") return defaultAdminUrl;
-
-  const hostname = window.location.hostname;
-  const adminHost = hostname === "127.0.0.1" || hostname === "localhost" ? "localhost" : hostname;
-
-  return `http://${adminHost}:8080`;
-}
-
-function useAdminUrl() {
-  const [adminUrl, setAdminUrl] = useState(defaultAdminUrl);
-
-  useEffect(() => {
-    setAdminUrl(getBrowserAdminUrl());
-  }, []);
-
-  return adminUrl;
-}
+const adminUrl = "https://octo-ai-dash.vercel.app/ai-employee";
 
 function Reveal({
   children,
@@ -286,8 +267,6 @@ function SectionHeader({
 }
 
 function Hero() {
-  const adminUrl = useAdminUrl();
-
   return (
     <section className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#ffffff_0%,#eef6ff_48%,#dff2ff_100%)] px-5 py-6">
       <BackgroundGrid />
@@ -858,8 +837,6 @@ function FitSection() {
 }
 
 function CTASection() {
-  const adminUrl = useAdminUrl();
-
   return (
     <section id="cta" className="relative overflow-hidden bg-[linear-gradient(180deg,#f4f9ff_0%,#ffffff_100%)] px-5 py-24 sm:py-32">
       <BackgroundGrid />
