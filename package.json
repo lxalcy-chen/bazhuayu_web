@@ -4,12 +4,17 @@
   "private": true,
   "scripts": {
     "setup:local": "node scripts/setup-local.mjs",
-    "predev": "npm run setup:local",
-    "dev": "next dev -H 0.0.0.0 -p 3101",
+    "free-port": "node scripts/free-port.mjs 3101",
+    "predev": "npm run free-port && npm run setup:local",
+    "dev": "npm run preview",
+    "dev:next": "next dev -H 0.0.0.0 -p 3101",
     "prebuild": "npm run setup:local",
     "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 3101",
-    "start:local": "next start -H 0.0.0.0 -p 3101",
+    "preview": "npm run free-port && npm run build && npm run serve:static",
+    "serve:static": "node scripts/preview.mjs",
+    "start": "npm run serve:static",
+    "start:next": "next start -H 0.0.0.0 -p 3101",
+    "start:local": "npm run serve:static",
     "lint": "eslint ."
   },
   "dependencies": {
